@@ -1,11 +1,20 @@
-import { View, Text, ScrollView, Image, Button, Alert } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  Button,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { icons } from "../../constants";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
-import { Link } from "expo-router";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import { Link, router } from "expo-router";
+import { signup } from "../../lib/actions/user";
 
 const SignUp = () => {
   // const { setUser, setIsLogged } = useGlobalContext();
@@ -16,8 +25,11 @@ const SignUp = () => {
   const [form, setForm] = useState({
     email: "",
     password: "",
-    password_confirm: "",
+    name: "Hiện chưa có tên",
+    dob: "2000-04-20T14:33:22.102Z",
+    gender: "MALE",
   });
+  const [passwordConfirm, setPasswordConfirm] = useState("");
 
   const validate = () => {
     if (form.email === "" || form.password === "") {
@@ -32,12 +44,15 @@ const SignUp = () => {
       return false;
     }
 
-    if (form.email === "" || form.password === "") {
-      Alert.alert("Error", "Please fill in all fields");
+    const passwordRegrex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
+    if (!passwordRegrex.test(form.password)) {
+      Alert.alert(
+        "Error",
+        "Password must contain at least one numeric digit, one uppercase and one lowercase letter, and at least 6 characters"
+      );
       return false;
     }
-
-    if (form.password !== form.password_confirm) {
+    if (form.password !== passwordConfirm) {
       Alert.alert("Error", "Passwords do not match");
       return false;
     }
@@ -57,19 +72,22 @@ const SignUp = () => {
 
     setSubmitting(true);
 
-    // try {
-    //   await signUp(form.email, form.password);
-    //   const result = await getCurrentUser();
-    //   setUser(result);
-    //   setIsLogged(true);
+    try {
+      console.log(
+        "form",
+        form.email,
+        form.password,
+        form.name,
+        form.dob,
+        form.gender
+      );
 
-    //   Alert.alert("Success", "User signed up successfully");
-    //   router.replace("/home");
-    // } catch (error) {
-    //   Alert.alert("Error", error.message);
-    // } finally {
-    //   setSubmitting(false);
-    // }
+      await signup(form.email, form.password, form.name, form.dob, form.gender);
+      router.replace("/sign-in");
+      setSubmitting(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -105,8 +123,8 @@ const SignUp = () => {
           />
           <FormField
             title="Password Confirm"
-            value={form.password_confirm}
-            handleChangeText={(e) => setForm({ ...form, password_confirm: e })}
+            value={passwordConfirm}
+            handleChangeText={(e) => setPasswordConfirm(e)}
             otherStyles="mt-7"
           />
 

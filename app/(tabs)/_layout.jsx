@@ -1,46 +1,54 @@
 import { View, Text, Image } from "react-native";
 import React from "react";
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import icons from "../../constants/icons";
+import { useGlobalContext } from "../../context/GlobalProvider";
+import Loader from "../../components/Loader";
+import { StatusBar } from "expo-status-bar";
+
+const TabIcon = ({ icon, color, name, focused }) => {
+  return (
+    <View className="flex items-center justify-center gap-2">
+      <FontAwesome name={icon} size={24} color={color} />
+      <Text
+        className={`${focused ? "font-psemibold" : "font-pregular"} text-xs`}
+        style={{ color: color }}
+      >
+        {name}
+      </Text>
+    </View>
+  );
+};
+
+const TabAuction = ({ icon, color, name, focused }) => {
+  return (
+    <View className="flex items-center justify-center gap-2">
+      <Image
+        source={icons.auction}
+        className="w-6 h-6"
+        tintColor={color}
+        resizeMode="contain"
+      />
+      <Text
+        className={`${focused ? "font-psemibold" : "font-pregular"}`}
+        style={{ color: color }}
+      >
+        Auction
+      </Text>
+    </View>
+  );
+};
 
 const TabsLayout = () => {
-  const TabIcon = ({ icon, color, name, focused }) => {
-    return (
-      <View className="flex items-center justify-center gap-2">
-        <FontAwesome name={icon} size={24} color={color} />
-        <Text
-          className={`${focused ? "font-psemibold" : "font-pregular"} text-xs`}
-          style={{ color: color }}
-        >
-          {name}
-        </Text>
-      </View>
-    );
-  };
+  const { loading, isLogged } = useGlobalContext();
 
-  const TabAuction = ({ icon, color, name, focused }) => {
-    return (
-      <View className="flex items-center justify-center gap-2">
-        <Image
-          source={icons.auction}
-          className="w-6 h-6"
-          tintColor={color}
-          resizeMode="contain"
-        />
-        <Text
-          className={`${focused ? "font-psemibold" : "font-pregular"}`}
-          style={{ color: color }}
-        >
-          Auction
-        </Text>
-      </View>
-    );
-  };
+  if (!loading && !isLogged) return <Redirect href="/sign-in" />;
 
   return (
     <>
       <Tabs
+        backBehavior="none"
         screenOptions={{
           tabBarActiveTintColor: "#FFA001",
           tabBarInactiveTintColor: "#CDCDE0",
@@ -94,6 +102,9 @@ const TabsLayout = () => {
           }}
         />
       </Tabs>
+
+      <Loader isLoading={loading} />
+      <StatusBar style="auto" />
     </>
   );
 };

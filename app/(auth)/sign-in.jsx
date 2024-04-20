@@ -4,7 +4,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import icons from "../../constants/icons";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
+import { login } from "../../lib/actions/user";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SignIn = () => {
   const [isSubmitting, setSubmitting] = useState(false);
@@ -16,38 +18,34 @@ const SignIn = () => {
   const submit = async () => {
     if (form.email === "" || form.password === "") {
       Alert.alert("Error", "Please fill in all fields");
+      return false;
     }
 
     //regex for email validation
     const emailRegrex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     if (!emailRegrex.test(form.email)) {
       Alert.alert("Error", "Please enter a valid email address");
+      return false;
     }
 
     //regex for password validation
-    const passwordRegrex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
-    if (!passwordRegrex.test(form.password)) {
-      Alert.alert(
-        "Error",
-        "Password must contain at least one numeric digit, one uppercase and one lowercase letter, and at least 6 characters"
-      );
+
+    setSubmitting(true);
+
+    try {
+      await login(form.password, form.email).then(() => {
+        router.replace("/home");
+      });
+      // await AsyncStorage.setItem("@auth", JSON.stringify(data));
+      //save the token to async storage
+      setSubmitting(false);
+      router.replace("/home");
+    } catch (error) {
+      console.log(error);
+      setSubmitting(false);
     }
 
-    // setSubmitting(true);
-
-    // try {
-    //   await signIn(form.email, form.password);
-    //   const result = await getCurrentUser();
-    //   setUser(result);
-    //   setIsLogged(true);
-
-    //   Alert.alert("Success", "User signed in successfully");
-    //   router.replace("/home");
-    // } catch (error) {
-    //   Alert.alert("Error", error.message);
-    // } finally {
-    //   setSubmitting(false);
-    // }
+    return true;
   };
 
   return (
