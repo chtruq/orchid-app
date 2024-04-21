@@ -21,25 +21,6 @@ const TabIcon = ({ icon, color, name, focused }) => {
   );
 };
 
-const TabAuction = ({ icon, color, name, focused }) => {
-  return (
-    <View className="flex items-center justify-center gap-2">
-      <Image
-        source={icons.auction}
-        className="w-6 h-6"
-        tintColor={color}
-        resizeMode="contain"
-      />
-      <Text
-        className={`${focused ? "font-psemibold" : "font-pregular"}`}
-        style={{ color: color }}
-      >
-        Auction
-      </Text>
-    </View>
-  );
-};
-
 const TabsLayout = () => {
   const { loading, isLogged } = useGlobalContext();
 
@@ -76,16 +57,7 @@ const TabsLayout = () => {
             ),
           }}
         />
-        <Tabs.Screen
-          name="auction"
-          options={{
-            title: "Auction",
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) => (
-              <TabAuction color={color} name="Home" focused={focused} />
-            ),
-          }}
-        />
+
         <Tabs.Screen
           name="profile"
           options={{

@@ -15,7 +15,6 @@ const GlobalProvider = ({ children }) => {
       .then((data) => {
         if (data) {
           const parsedData = JSON.parse(data);
-          console.log("parsedData", parsedData);
           if (parsedData && parsedData.metadata) {
             api.defaults.headers.common[
               "Authorization"
@@ -25,7 +24,6 @@ const GlobalProvider = ({ children }) => {
           if (parsedData && parsedData.payload) {
             setIsLogged(true);
             setUser(parsedData.payload);
-            console.log(isLogged, user);
           } else {
             setIsLogged(false);
             setUser(null);
@@ -44,8 +42,6 @@ const GlobalProvider = ({ children }) => {
         setLoading(false);
       });
   }, []);
-
-  console.log("isLogged", isLogged, "user", user, "loading", loading);
 
   return (
     <GlobalContext.Provider
