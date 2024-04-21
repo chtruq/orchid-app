@@ -7,13 +7,17 @@ import CustomButton from "../../components/CustomButton";
 import { Link, router } from "expo-router";
 import { login } from "../../lib/actions/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useGlobalContext } from "../../context/GlobalProvider";
 
 const SignIn = () => {
+  const { setUser, setIsLogged } = useGlobalContext();
   const [isSubmitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
-    email: "",
-    password: "",
+    email: "Ctrung1@gmail.com",
+    password: "Ctrung1",
   });
+
+  const { loading, isLogged } = useGlobalContext();
 
   const submit = async () => {
     if (form.email === "" || form.password === "") {
@@ -33,13 +37,12 @@ const SignIn = () => {
     setSubmitting(true);
 
     try {
-      await login(form.password, form.email).then(() => {
+      await login(form.password, form.email).then(async (response) => {
+        await AsyncStorage.setItem("@auth", JSON.stringify(response));
+        setUser(response.payload);
+        setIsLogged(true);
         router.replace("/home");
       });
-      // await AsyncStorage.setItem("@auth", JSON.stringify(data));
-      //save the token to async storage
-      setSubmitting(false);
-      router.replace("/home");
     } catch (error) {
       console.log(error);
       setSubmitting(false);
@@ -47,6 +50,8 @@ const SignIn = () => {
 
     return true;
   };
+
+  console.log("loading signin", loading, "isLogged sign", isLogged);
 
   return (
     <SafeAreaView className="bg-white">

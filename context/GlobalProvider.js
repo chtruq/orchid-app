@@ -10,33 +10,42 @@ const GlobalProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  //use Async storage to check if the user is logged in
   useEffect(() => {
-    AsyncStorage.getItem("@auth").then((data) => {
-      if (data) {
-        const parsedData = JSON.parse(data);
-        if (parsedData && parsedData.metadata) {
-          const { access_token } = parsedData.metadata;
-          api.defaults.headers.common[
-            "Authorization"
-          ] = `Bearer ${access_token}`;
-        }
+    AsyncStorage.getItem("@auth")
+      .then((data) => {
+        if (data) {
+          const parsedData = JSON.parse(data);
+          console.log("parsedData", parsedData);
+          if (parsedData && parsedData.metadata) {
+            api.defaults.headers.common[
+              "Authorization"
+            ] = `Bearer ${parsedData.metadata.access_token}`;
+          }
 
-        if (parsedData && parsedData.payload) {
-          const { userinfo } = parsedData.payload;
-
-          setIsLogged(true);
-          setUser(userinfo);
+          if (parsedData && parsedData.payload) {
+            setIsLogged(true);
+            setUser(parsedData.payload);
+            console.log(isLogged, user);
+          } else {
+            setIsLogged(false);
+            setUser(null);
+          }
         } else {
           setIsLogged(false);
           setUser(null);
         }
+      })
+      .catch((error) => {
+        console.error("Error in getting auth", error);
+        setIsLogged(false);
+        setUser(null);
+      })
+      .finally(() => {
         setLoading(false);
-      } else {
-        setLoading(false);
-      }
-    });
+      });
   }, []);
+
+  console.log("isLogged", isLogged, "user", user, "loading", loading);
 
   return (
     <GlobalContext.Provider
