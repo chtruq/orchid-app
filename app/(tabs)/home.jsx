@@ -15,12 +15,13 @@ import Wallet from "../../components/Wallet";
 import Filter from "../../components/Filter";
 import Card from "../../components/Card";
 import { getAuctions } from "../../lib/actions/auction";
+import { router } from "expo-router";
 
 const Home = () => {
   const [selectedFilter, setSelectedFilter] = useState("ALL");
-
   const [auctionData, setAuctionData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [search, setSearch] = useState();
 
   const check = async () => {
     try {
@@ -53,15 +54,34 @@ const Home = () => {
     setSelectedFilter(selectedFilter);
   };
 
+  const handleSearchParams = (search) => {
+    setSearch(search);
+    console.log("search", search);
+  };
+
   const getAuction = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       let params = {};
+      if (search) {
+        params = { search: search };
+      }
       if (selectedFilter !== "ALL") {
         params = { status: selectedFilter };
-      } else {
-        params = {};
       }
+      if (search && selectedFilter !== "ALL") {
+        params = { status: selectedFilter, search: search };
+      }
+
+      // if (selectedFilter !== "ALL") {
+      //   params = { status: selectedFilter };
+      // } else if (search) {
+      //   params = { search: search };
+      // } else if (search && selectedFilter !== "ALL") {
+      //   params = { status: selectedFilter, search: search };
+      // } else {
+      //   params = {};
+      // }
       const response = await getAuctions(params);
       setAuctionData(response.payload.content);
       setIsLoading(false);
@@ -72,7 +92,7 @@ const Home = () => {
 
   useEffect(() => {
     getAuction();
-  }, [selectedFilter]);
+  }, [selectedFilter, search]);
 
   return (
     <SafeAreaView className="bg-white">
@@ -82,7 +102,7 @@ const Home = () => {
         } `}
       >
         <View className="m-2">
-          <SearchInput />
+          <SearchInput onSearch={handleSearchParams} />
 
           <Wallet />
           <Filter onPress={handleFilterSelect} />
@@ -93,30 +113,12 @@ const Home = () => {
               <ActivityIndicator size="large" color="#FFAD41" />
             </View>
           ) : auctionData.length > 0 ? (
-            auctionData.map((item, index) => (
-              // <CardItem key={index} data={item} />
-              <Card key={item.id} data={item} />
-            ))
+            auctionData.map((item, index) => <Card key={item.id} data={item} />)
           ) : (
             <View className="h-[50vh] items-center justify-center">
-              <Text className="text-center text-xl">
-                There is no product with status {selectedFilter}
-              </Text>
+              <Text className="text-center text-xl">There is no product</Text>
             </View>
           )}
-
-          {/* auctionData &&
-            auctionData.map((item, index) => (
-              // <CardItem key={index} data={item} />
-              <Card key={item.id} data={item} />
-            ))} */}
-          {/* {isLoading ? (
-            <ActivityIndicator size="large" color="#FFAD41" />
-          ) : (
-            auctionData.length === 0 && (
-             
-            )
-          )} */}
         </View>
       </ScrollView>
     </SafeAreaView>

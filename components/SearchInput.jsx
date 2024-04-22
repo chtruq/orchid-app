@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { router, usePathname } from "expo-router";
 import { View, TouchableOpacity, Image, TextInput, Alert } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
 
-import { icons } from "../constants";
-
-const SearchInput = ({ initialQuery }) => {
+const SearchInput = ({ onSearch }) => {
   const pathname = usePathname();
-  const [query, setQuery] = useState(initialQuery || "");
+  const [query, setQuery] = useState(onSearch || "");
 
   return (
     <View className="flex flex-row items-center space-x-4 w-full h-16 px-4 bg-white rounded-2xl border-2 border-black-200 focus:border-secondary">
@@ -19,18 +18,17 @@ const SearchInput = ({ initialQuery }) => {
       />
 
       <TouchableOpacity
+        className="flex items-center justify-center w-12 rounded-2xl"
         onPress={() => {
-          if (query === "")
-            return Alert.alert(
-              "Missing Query",
-              "Please input something to search results across database"
-            );
-
-          if (pathname.startsWith("/search")) router.setParams({ query });
-          else router.push(`/search/${query}`);
+          // if (query === "")
+          //   return Alert.alert(
+          //     "Missing Query",
+          //     "Please input something to search results across database"
+          //   );
+          onSearch(query);
         }}
       >
-        <Image source={icons.search} className="w-5 h-5" resizeMode="contain" />
+        <FontAwesome name="search" size={24} color="black" />
       </TouchableOpacity>
     </View>
   );
