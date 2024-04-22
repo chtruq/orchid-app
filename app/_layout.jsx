@@ -56,6 +56,21 @@ const RootLayout = () => {
               headerBackButtonMenuEnabled: false,
             }}
           />
+          <Stack.Screen
+            name="(deposit)"
+            options={{
+              headerTitle: "Deposit",
+              headerBackTitle: "Back",
+            }}
+          />
+
+          <Stack.Screen
+            name="product-detail"
+            options={{
+              headerTitle: "Auction Detail",
+              headerBackTitle: "Back",
+            }}
+          />
         </Stack>
       </GlobalProvider>
     </>

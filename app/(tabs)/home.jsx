@@ -9,19 +9,25 @@ import {
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getProducts } from "../../lib/actions/product";
-import { rechargeWalletByUserID } from "../../lib/actions/wallet";
+import {
+  getWalletByUserID,
+  rechargeWalletByUserID,
+} from "../../lib/actions/wallet";
 import SearchInput from "../../components/SearchInput";
 import Wallet from "../../components/Wallet";
 import Filter from "../../components/Filter";
 import Card from "../../components/Card";
 import { getAuctions } from "../../lib/actions/auction";
 import { router } from "expo-router";
+import { useGlobalContext } from "../../context/GlobalProvider";
 
 const Home = () => {
   const [selectedFilter, setSelectedFilter] = useState("ALL");
   const [auctionData, setAuctionData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState();
+  const [balance, setBalance] = useState(0); // [1
+  const { user } = useGlobalContext();
 
   const check = async () => {
     try {
@@ -35,7 +41,7 @@ const Home = () => {
 
   const recharge = async () => {
     try {
-      const userID = 3;
+      const userID = 4;
       const amount = 10000;
       const response = await rechargeWalletByUserID(userID, amount);
 
@@ -56,8 +62,20 @@ const Home = () => {
 
   const handleSearchParams = (search) => {
     setSearch(search);
-    console.log("search", search);
   };
+
+  const handleShowBalance = async () => {
+    try {
+      const response = await getWalletByUserID(user.id);
+      setBalance(response.balance);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    handleShowBalance();
+  }, []);
 
   const getAuction = async () => {
     setIsLoading(true);
@@ -72,16 +90,6 @@ const Home = () => {
       if (search && selectedFilter !== "ALL") {
         params = { status: selectedFilter, search: search };
       }
-
-      // if (selectedFilter !== "ALL") {
-      //   params = { status: selectedFilter };
-      // } else if (search) {
-      //   params = { search: search };
-      // } else if (search && selectedFilter !== "ALL") {
-      //   params = { status: selectedFilter, search: search };
-      // } else {
-      //   params = {};
-      // }
       const response = await getAuctions(params);
       setAuctionData(response.payload.content);
       setIsLoading(false);
@@ -101,10 +109,17 @@ const Home = () => {
           isLoading && "h-[100vh]"
         } `}
       >
+        {/* <TouchableOpacity onPress={() => recharge()}>
+          <Text>Check</Text>
+        </TouchableOpacity> */}
+
         <View className="m-2">
           <SearchInput onSearch={handleSearchParams} />
 
-          <Wallet />
+          <Wallet
+            //  onDeposit={() => handleDeposit()}
+            balance={balance}
+          />
           <Filter onPress={handleFilterSelect} />
 
           {/* card fetch api base on filter */}
@@ -113,7 +128,19 @@ const Home = () => {
               <ActivityIndicator size="large" color="#FFAD41" />
             </View>
           ) : auctionData.length > 0 ? (
-            auctionData.map((item, index) => <Card key={item.id} data={item} />)
+            auctionData.map((item, index) => (
+              <TouchableOpacity
+                key={item.id}
+                onPress={() =>
+                  router.navigate({
+                    pathname: `/product-detail/[id]`,
+                    params: { id: item.id },
+                  })
+                }
+              >
+                <Card data={item} />
+              </TouchableOpacity>
+            ))
           ) : (
             <View className="h-[50vh] items-center justify-center">
               <Text className="text-center text-xl">There is no product</Text>
