@@ -9,10 +9,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getProducts } from "../../lib/actions/product";
-import {
-  getWalletByUserID,
-  rechargeWalletByUserID,
-} from "../../lib/actions/wallet";
+import { getWalletByUserID } from "../../lib/actions/wallet";
 import SearchInput from "../../components/SearchInput";
 import Wallet from "../../components/Wallet";
 import Filter from "../../components/Filter";
@@ -39,23 +36,6 @@ const Home = () => {
     }
   };
 
-  const recharge = async () => {
-    try {
-      const userID = 4;
-      const amount = 10000;
-      const response = await rechargeWalletByUserID(userID, amount);
-
-      const canOpen = await Linking.canOpenURL(response);
-      if (canOpen) {
-        await Linking.openURL(response);
-      } else {
-        console.log("Cannot open");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handleFilterSelect = (selectedFilter) => {
     setSelectedFilter(selectedFilter);
   };
@@ -75,7 +55,7 @@ const Home = () => {
 
   useEffect(() => {
     handleShowBalance();
-  }, []);
+  }, [balance]);
 
   const getAuction = async () => {
     setIsLoading(true);
@@ -91,6 +71,7 @@ const Home = () => {
         params = { status: selectedFilter, search: search };
       }
       const response = await getAuctions(params);
+      console.log("data", response.payload.content);
       setAuctionData(response.payload.content);
       setIsLoading(false);
     } catch (error) {
@@ -109,10 +90,6 @@ const Home = () => {
           isLoading && "h-[100vh]"
         } `}
       >
-        {/* <TouchableOpacity onPress={() => recharge()}>
-          <Text>Check</Text>
-        </TouchableOpacity> */}
-
         <View className="m-2">
           <SearchInput onSearch={handleSearchParams} />
 
