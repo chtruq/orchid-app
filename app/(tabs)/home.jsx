@@ -4,13 +4,24 @@ import {
   ScrollView,
   TouchableOpacity,
   Linking,
+  ActivityIndicator,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getProducts } from "../../lib/actions/product";
 import { rechargeWalletByUserID } from "../../lib/actions/wallet";
+import SearchInput from "../../components/SearchInput";
+import Wallet from "../../components/Wallet";
+import Filter from "../../components/Filter";
+import Card from "../../components/Card";
+import { getAuctions } from "../../lib/actions/auction";
 
 const Home = () => {
+  const [selectedFilter, setSelectedFilter] = useState("ALL");
+
+  const [auctionData, setAuctionData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   const check = async () => {
     try {
       const active = true;
@@ -38,19 +49,74 @@ const Home = () => {
     }
   };
 
+  const handleFilterSelect = (selectedFilter) => {
+    setSelectedFilter(selectedFilter);
+  };
+
+  const getAuction = async () => {
+    try {
+      setIsLoading(true);
+      let params = {};
+      if (selectedFilter !== "ALL") {
+        params = { status: selectedFilter };
+      } else {
+        params = {};
+      }
+      const response = await getAuctions(params);
+      setAuctionData(response.payload.content);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getAuction();
+  }, [selectedFilter]);
+
   return (
-    <SafeAreaView>
-      <ScrollView contentContainerStyle={{ height: "100%" }}>
-        <View>
-          <Text>Home</Text>
+    <SafeAreaView className="bg-white">
+      <ScrollView
+        className={`${auctionData.length === 0 && "h-[100vh]"} ${
+          isLoading && "h-[100vh]"
+        } `}
+      >
+        <View className="m-2">
+          <SearchInput />
 
-          <TouchableOpacity onPress={() => check()}>
-            <Text className="text-3xl">Check APi</Text>
-          </TouchableOpacity>
+          <Wallet />
+          <Filter onPress={handleFilterSelect} />
 
-          <TouchableOpacity onPress={() => recharge()}>
-            <Text className="text-3xl">Test Wallet</Text>
-          </TouchableOpacity>
+          {/* card fetch api base on filter */}
+          {isLoading ? (
+            <View className="h-[50vh] items-center justify-center">
+              <ActivityIndicator size="large" color="#FFAD41" />
+            </View>
+          ) : auctionData.length > 0 ? (
+            auctionData.map((item, index) => (
+              // <CardItem key={index} data={item} />
+              <Card key={item.id} data={item} />
+            ))
+          ) : (
+            <View className="h-[50vh] items-center justify-center">
+              <Text className="text-center text-xl">
+                There is no product with status {selectedFilter}
+              </Text>
+            </View>
+          )}
+
+          {/* auctionData &&
+            auctionData.map((item, index) => (
+              // <CardItem key={index} data={item} />
+              <Card key={item.id} data={item} />
+            ))} */}
+          {/* {isLoading ? (
+            <ActivityIndicator size="large" color="#FFAD41" />
+          ) : (
+            auctionData.length === 0 && (
+             
+            )
+          )} */}
         </View>
       </ScrollView>
     </SafeAreaView>
