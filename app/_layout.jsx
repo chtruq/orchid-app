@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import GlobalProvider from "../context/GlobalProvider";
+import { ToastProvider } from "react-native-toast-notifications";
 
 const RootLayout = () => {
   const [fontsLoaded, error] = useFonts({
@@ -35,43 +36,45 @@ const RootLayout = () => {
   return (
     <>
       <GlobalProvider>
-        <Stack>
-          <Stack.Screen
-            name="index"
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="(auth)"
-            options={{
-              headerShown: false,
-            }}
-          />
+        <ToastProvider>
+          <Stack>
+            <Stack.Screen
+              name="index"
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="(auth)"
+              options={{
+                headerShown: false,
+              }}
+            />
 
-          <Stack.Screen
-            name="(tabs)"
-            options={{
-              headerShown: false,
-              headerBackButtonMenuEnabled: false,
-            }}
-          />
-          <Stack.Screen
-            name="(deposit)"
-            options={{
-              headerTitle: "Deposit",
-              headerBackTitle: "Back",
-            }}
-          />
+            <Stack.Screen
+              name="(tabs)"
+              options={{
+                headerShown: false,
+                headerBackButtonMenuEnabled: false,
+              }}
+            />
+            <Stack.Screen
+              name="(deposit)"
+              options={{
+                headerTitle: "Deposit",
+                headerBackTitle: "Back",
+              }}
+            />
 
-          <Stack.Screen
-            name="product-detail"
-            options={{
-              headerTitle: "Auction Detail",
-              headerBackTitle: "Back",
-            }}
-          />
-        </Stack>
+            <Stack.Screen
+              name="product-detail"
+              options={{
+                headerTitle: "Auction Detail",
+                headerBackTitle: "Back",
+              }}
+            />
+          </Stack>
+        </ToastProvider>
       </GlobalProvider>
     </>
   );

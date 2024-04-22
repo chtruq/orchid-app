@@ -15,6 +15,7 @@ import { rechargeWalletByUserID } from "../../lib/actions/wallet";
 import { WebView } from "react-native-webview";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { router } from "expo-router";
+import { useToast } from "react-native-toast-notifications";
 
 const Deposit = () => {
   const [amount, setAmount] = useState(0 || null); // [1
@@ -23,6 +24,7 @@ const Deposit = () => {
 
   const [showWebView, setShowWebView] = useState(false);
 
+  const toast = useToast();
   const { user } = useGlobalContext();
   const userID = user.id;
 
@@ -47,13 +49,26 @@ const Deposit = () => {
     if (webViewstate.url.includes("test-success")) {
       setShowWebView(false);
       setAmount(0);
+      toast.show("Recharge successful", {
+        type: "success",
+      });
       router.replace("/home");
+    } else if (webViewstate.url.includes("test-failed")) {
+      setShowWebView(false);
+      setAmount(0);
+      toast.show("Recharge failed", {
+        type: "error",
+      });
     }
   };
 
   const handleAmountChange = (e) => {
-    if (e < 10000) {
+    if (e === "" || e === 0) {
       setError("Minimum amount is 10000");
+      setAmount(e);
+    } else if (e < 10000) {
+      setError("Minimum amount is 10000");
+      setAmount(e);
     } else {
       setError("");
       setAmount(e);
@@ -88,19 +103,18 @@ const Deposit = () => {
     },
   ];
 
-  console.log("amount", amount);
-
   return (
     <ScrollView className="h-[100vh] bg-white">
       <View className="m-2">
         {!showWebView && (
           <View>
-            <Text> Enter the amount: </Text>
+            <Text> Enter the amount: (VNĐ) </Text>
             <View className="space-x-4 w-full h-16 px-4 bg-white rounded-2xl border-2 border-black-200 focus:border-secondary">
               <TextInput
                 className="text-base mt-0.5 text-black-100 flex-1 font-pregular"
                 placeholder="Amount"
                 placeholderTextColor="#CDCDE0"
+                keyboardType="numeric"
                 value={amount}
                 onChangeText={handleAmountChange}
               />
@@ -112,24 +126,28 @@ const Deposit = () => {
               {/* list amount choosen */}
               {defaultListAmount.map((item) => (
                 <TouchableOpacity
-                  className="w-[45%] bg-secondary-100 p-4 mt-4 m-2 rounded-2xl border-black-200 border-2 "
+                  className="w-[45%] bg-orange-300 p-4 mt-4 m-2 rounded-2xl border-black-200 border-2 "
                   key={item.id}
-                  onPress={() => setAmount(String(item.amount))}
+                  onPress={() => {
+                    setAmount(String(item.amount));
+                    setError("");
+                  }}
                 >
                   <Text className="text-white text-center">{item.amount}</Text>
                 </TouchableOpacity>
               ))}
             </View>
 
-            {error & (error === "") ? (
-              <View className="bg-slate-500 p-4 rounded-2xl mt-4">
+            {error ? (
+              <View className="bg-slate-500 p-6 rounded-2xl mt-4">
                 <Text className="text-white text-center">Recharge</Text>
               </View>
             ) : (
-              <TouchableOpacity onPress={recharge}>
-                <View className="bg-secondary-100 p-4 rounded-2xl border-2 mt-4">
-                  <Text className="text-white text-center">Recharge</Text>
-                </View>
+              <TouchableOpacity
+                className=" bg-secondary-100 p-6 rounded-2xl border-2 mt-4"
+                onPress={recharge}
+              >
+                <Text className="text-white text-center">Recharge</Text>
               </TouchableOpacity>
             )}
           </View>

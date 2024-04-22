@@ -17,8 +17,10 @@ const Filter = ({ onPress }) => {
         {statusData.map((item, index) => (
           <View
             key={index}
-            className={`flex-1 m-1 p-2 border-2 border-black-200 rounded-2xl ${
-              selectedButton === item.value ? "bg-orange-500" : "bg-white"
+            className={`flex-1 m-1 p-2  border-gray-200 shadow-sm rounded-2xl ${
+              selectedButton === item.value
+                ? "bg-orange-500 border-orange-500 "
+                : "bg-white"
             }`}
           >
             <TouchableOpacity
