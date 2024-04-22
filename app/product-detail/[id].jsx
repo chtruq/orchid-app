@@ -12,9 +12,8 @@ const ProductDetails = () => {
 
   const getAutions = async () => {
     try {
-      console.log(id);
       const response = await getAuctionsByID(id.id);
-      console.log(response);
+      setAuction(response.payload);
     } catch (error) {
       console.log(error);
     }
@@ -22,11 +21,13 @@ const ProductDetails = () => {
 
   useEffect(() => {
     getAutions();
-  }, [auction]);
+  }, []);
+
+  console.log("auction", auction);
 
   return (
     <View>
-      <Text>ProductDetails</Text>
+      <Text>{auction.title}</Text>
     </View>
   );
 };
