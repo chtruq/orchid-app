@@ -17,8 +17,8 @@ import ListImageProduct from "./components/ListImageProduct";
 import CountdownTimer from "./components/CountdownTimer";
 import ModalRegisterAuction from "./components/ModalRisgterAuction";
 import { useGlobalContext } from "../../context/GlobalProvider";
-import { Toast } from "react-native-toast-notifications";
 import { createBidding, getBiddings } from "../../lib/actions/bidding";
+import { useToast } from "react-native-toast-notifications";
 const ProductDetails = () => {
   const [product, setProduct] = useState([]);
   const [auction, setAuction] = useState([]);
@@ -33,6 +33,9 @@ const ProductDetails = () => {
   const userId = user.id;
   const [list, setList] = useState([]);
   const [biddingPrices, setBiddingPrices] = useState(0); // [1,2,3,4,5,6,7,8,9,10
+  const toast = useToast();
+  const [biddingPrice, setBiddingPrice] = useState(0);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -99,15 +102,39 @@ const ProductDetails = () => {
     bidding(bridge);
   };
 
+  const handlePlaceBid = (text) => {
+    const bridge = Number(text);
+    if (bridge === "" || bridge === 0) {
+      setBiddingPrices(text);
+      setError("Minimum amount is 10000");
+    } else if (bridge > actualPrice + biddingJump) {
+      setBiddingPrices(text);
+      setError("");
+    } else {
+      setBiddingPrices(text);
+      setError("Bid must be greater than actual price + bidding jump");
+    }
+  };
+
+  const handlePlaceBidding = () => {
+    bidding(biddingPrices);
+  };
+
   const bidding = async (abc) => {
     const body = {
       auctionID: id.id,
       biddingPrice: abc,
       userID: userId,
     };
-    console.log("body", body);
     try {
       const response = await createBidding(body);
+      if (response.status === 200) {
+        toast.show("Bidding successfully", {
+          type: "success",
+        });
+        getAuctionByAuctionid(id.id);
+        getBiddingList();
+      }
     } catch (error) {
       console.log(error);
     }
@@ -176,25 +203,40 @@ const ProductDetails = () => {
                   keyboardType="number-pad"
                   scrollEnabled={true}
                   value={biddingPrices.toString()}
+                  onChangeText={(text) => handlePlaceBid(text)}
                 />
-                <TouchableOpacity className="m -2 rounded-md border border-black">
-                  <Text className="p-2 ">Place bid</Text>
-                </TouchableOpacity>
+                {error && <Text className="text-red-500">{error}</Text>}
+                <View className="flex-row justify-around mt-3">
+                  {!error ? (
+                    <TouchableOpacity
+                      onPress={() => {
+                        handlePlaceBidding();
+                      }}
+                      className="rounded-md border border-black"
+                    >
+                      <Text className="p-2 ">Place bid</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <View className="rounded-md border bg-gray-400 border-black">
+                      <Text className="p-2 text-gray-100 ">Place bid</Text>
+                    </View>
+                  )}
 
-                <TouchableOpacity
-                  onPress={() => {
-                    handleBidding();
-                  }}
-                  className="rounded-md border border-black"
-                >
-                  <Text className="p-2">
-                    Raise{" "}
-                    {new Intl.NumberFormat("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    }).format(biddingJump)}{" "}
-                  </Text>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      handleBidding();
+                    }}
+                    className="rounded-md border border-black"
+                  >
+                    <Text className="p-2">
+                      Raise{" "}
+                      {new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(biddingJump)}{" "}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
 
@@ -225,7 +267,9 @@ const ProductDetails = () => {
               ))}
             </View>
           ) : (
-            <View> Still not have no one bidding </View>
+            <View>
+              <Text>Still not have no one bidding</Text>
+            </View>
           )}
           <ModalRegisterAuction
             data={auction}
