@@ -76,7 +76,6 @@ const Home = () => {
   useEffect(() => {
     handleShowBalance();
   }, []);
-
   const getAuction = async () => {
     setIsLoading(true);
     try {

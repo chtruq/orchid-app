@@ -6,7 +6,7 @@ const ListImageProduct = ({ data }) => {
     const images = data.productImages
   return (
     <View className="p-4">
-      <Carousel className="w-full h-72" showsControls={false}>
+      <Carousel className="w-full h-72 border-2 rounded-lg" showsControls={false}>
         {images.map((image) => (
           <Image
             key={image.id}
