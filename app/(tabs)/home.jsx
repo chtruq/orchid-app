@@ -57,6 +57,7 @@ const Home = () => {
     handleShowBalance();
   }, [balance]);
 
+
   const getAuction = async () => {
     setIsLoading(true);
     try {
