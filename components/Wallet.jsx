@@ -4,8 +4,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 
 const Wallet = ({ balance }) => {
-  console.log("wallet balance: ", balance);
-
   return (
     <View className="m-5 shadow-xl flex justify-around flex-row rounded-xl ">
       <View className=" w-[40%]">

@@ -73,6 +73,21 @@ const RootLayout = () => {
                 headerBackTitle: "Back",
               }}
             />
+
+            <Stack.Screen
+              name="(order)"
+              options={{
+                headerTitle: "Order History",
+                headerBackTitle: "Back",
+              }}
+            />
+            <Stack.Screen
+              name="(update-profile)"
+              options={{
+                headerTitle: "Address",
+                headerBackTitle: "Back",
+              }}
+            />
           </Stack>
         </ToastProvider>
       </GlobalProvider>
