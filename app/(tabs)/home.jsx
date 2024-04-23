@@ -102,7 +102,7 @@ const Home = () => {
           {/* card fetch api base on filter */}
           {isLoading ? (
             <View className="h-[50vh] items-center justify-center">
-              <ActivityIndicator size="large" color="#FFAD41" />
+              <ActivityIndicator size="large" color="#FF9C01" />
             </View>
           ) : auctionData.length > 0 ? (
             auctionData.map((item, index) => (

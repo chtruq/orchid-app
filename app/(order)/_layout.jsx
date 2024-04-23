@@ -7,6 +7,7 @@ const OrderLayout = () => {
     <>
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="payment" options={{ headerShown: false }} />
       </Stack>
     </>
   );

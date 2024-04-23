@@ -30,7 +30,6 @@ const Deposit = () => {
 
   const recharge = async () => {
     try {
-      console.log(userID, amount);
       const response = await rechargeWalletByUserID(userID, amount);
 
       const canOpen = await Linking.canOpenURL(response);

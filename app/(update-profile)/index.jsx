@@ -32,6 +32,7 @@ const AddressProfile = () => {
       setIsLoading(false);
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
     }
   };
 
@@ -109,7 +110,7 @@ const AddressProfile = () => {
           </View>
         )}
 
-        {address &&
+        {/* {address &&
           address.map((data) => (
             <TouchableOpacity
               className="p-2 bg-white m-2 h-[20vh] rounded-lg"
@@ -132,7 +133,7 @@ const AddressProfile = () => {
                 <Text className=" text-base">Set default address</Text>
               </TouchableOpacity>
             </TouchableOpacity>
-          ))}
+          ))} */}
       </View>
     </ScrollView>
   );

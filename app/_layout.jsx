@@ -77,7 +77,7 @@ const RootLayout = () => {
             <Stack.Screen
               name="(order)"
               options={{
-                headerTitle: "Order History",
+                headerTitle: "Order",
                 headerBackTitle: "Back",
               }}
             />
