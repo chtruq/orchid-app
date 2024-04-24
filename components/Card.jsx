@@ -2,7 +2,6 @@ import { View, Text, Image, ScrollView } from "react-native";
 import React from "react";
 
 const Card = ({ data }) => {
-  console.log(data);
   return (
     <View className="bg-white shadow-lg shadow-slate-300 rounded-lg border-black-200 p-3 m-2 ">
       <Image
@@ -12,7 +11,9 @@ const Card = ({ data }) => {
       <View
         className={` w-[25%] mt-2 mr-4 absolute right-0 bottom-2 p-2 bg-white border-2 rounded-lg border-gray-400 ${
           data.status === "END" ? "bg-gray-800" : "bg-white"
-        } ${data.status === "COMING" ? "bg-green-400" : "bg-white"} `}
+        } ${data.status === "COMING" ? "bg-orange-200" : "bg-white"} ${
+          data.status === "LIVE" ? "bg-green-200" : "bg-white"
+        } `}
       >
         <Text
           className={`text-center capitalize ${

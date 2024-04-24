@@ -95,6 +95,12 @@ const Order = () => {
             </View>
           );
         })}
+
+      {!orders.length && (
+        <View className="h-[80vh] items-center justify-center">
+          <Text className="text-base">No order found</Text>
+        </View>
+      )}
     </ScrollView>
   );
 };

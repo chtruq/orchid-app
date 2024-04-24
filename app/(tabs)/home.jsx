@@ -26,15 +26,15 @@ const Home = () => {
   const [balance, setBalance] = useState(0); // [1
   const { user } = useGlobalContext();
 
-  const check = async () => {
-    try {
-      const active = true;
-      const response = await getProducts(active);
-      console.log(response.content);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const check = async () => {
+  //   try {
+  //     const active = true;
+  //     const response = await getProducts(active);
+  //     console.log(response.content);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const handleFilterSelect = (selectedFilter) => {
     setSelectedFilter(selectedFilter);
@@ -56,7 +56,6 @@ const Home = () => {
   useEffect(() => {
     handleShowBalance();
   }, [balance]);
-
 
   const getAuction = async () => {
     setIsLoading(true);
@@ -87,7 +86,7 @@ const Home = () => {
   return (
     <SafeAreaView className="bg-white">
       <ScrollView
-        className={`${auctionData.length === 0 && "h-[100vh]"} ${
+        className={`h-[85vh] ${auctionData.length === 0 && "h-[100vh]"} ${
           isLoading && "h-[100vh]"
         } `}
       >
