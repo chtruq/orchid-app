@@ -4,10 +4,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 
 const Wallet = ({ balance }) => {
-  console.log("wallet balance: ", balance);
-
   return (
-    <View className="m-5 shadow-lg flex justify-around flex-row bg-white rounded-xl border-2 border-slate-950">
+    <View className="m-5 shadow-xl flex justify-around flex-row rounded-xl ">
       <View className=" w-[40%]">
         <TouchableOpacity
           onPress={() => router.push("deposit")}

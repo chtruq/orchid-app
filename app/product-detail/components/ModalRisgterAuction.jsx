@@ -9,11 +9,15 @@ import {
 import { getWalletByUserID } from "../../../lib/actions/wallet";
 import { useGlobalContext } from "../../../context/GlobalProvider";
 import { registerByAuctionID } from "../../../lib/actions/auction";
+import { useToast } from "react-native-toast-notifications";
 
 const ModalRegisterAuction = ({ data, isVisible, onClose }) => {
   const { user } = useGlobalContext();
   const [balance, setBalance] = useState(0);
   const [isRegistered, setIsRegistered] = useState(false);
+
+  const toast = useToast();
+
   const handleShowBalance = async () => {
     try {
       const response = await getWalletByUserID(user.id);
@@ -31,12 +35,16 @@ const ModalRegisterAuction = ({ data, isVisible, onClose }) => {
     setIsRegistered(isUserRegistered);
   }, [data, user.id]);
 
-  console.log("user-id", user.id);
-  console.log("balance", balance);
-  console.log("data", data);
+  // console.log("user-id", user.id);
+  // console.log("balance", balance);
+  // console.log("data", data);
   const handleRegister = async () => {
     if (isRegistered) {
-      ToastAndroid.show("Bạn đã vào phiên đấu giá", ToastAndroid.SHORT);
+      // ToastAndroid.show("Bạn đã vào phiên đấu giá", ToastAndroid.SHORT);
+
+      toast.show("Successfully registered into the auction", {
+        type: "success",
+      });
     } else if (balance >= data.startPrice) {
       try {
         const body = {
@@ -49,7 +57,7 @@ const ModalRegisterAuction = ({ data, isVisible, onClose }) => {
         console.log(error);
       }
     } else {
-      ToastAndroid.show("Bạn không đủ số dư trong ví", ToastAndroid.SHORT);
+      // ToastAndroid.show("Bạn không đủ số dư trong ví", ToastAndroid.SHORT);
     }
   };
   return (
@@ -61,9 +69,16 @@ const ModalRegisterAuction = ({ data, isVisible, onClose }) => {
     >
       <View className="backdrop-blur-sm bg-white/60 flex-1 justify-center items-center">
         <View className=" bg-white p-4 w-[40vh] h-[35vh] rounded-lg border-2">
-          <Text className="text-center text-[22px] text-red-400">
-            Register for auction
-          </Text>
+          {isRegistered ? (
+            <Text className="text-center text-[22px] text-red-400">
+              You have already registered for this auction
+            </Text>
+          ) : (
+            <Text className="text-center text-[22px] text-red-400">
+              Register for auction
+            </Text>
+          )}
+
           <View className="m-1.5 flex-row justify-start">
             <Text className="font-medium text-[18px]">Product name: </Text>
             <Text className="text-[18px]">{data.productName}</Text>

@@ -9,10 +9,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getProducts } from "../../lib/actions/product";
-import {
-  getWalletByUserID,
-  rechargeWalletByUserID,
-} from "../../lib/actions/wallet";
+import { getWalletByUserID } from "../../lib/actions/wallet";
 import SearchInput from "../../components/SearchInput";
 import Wallet from "../../components/Wallet";
 import Filter from "../../components/Filter";
@@ -29,32 +26,15 @@ const Home = () => {
   const [balance, setBalance] = useState(0); // [1
   const { user } = useGlobalContext();
 
-  const check = async () => {
-    try {
-      const active = true;
-      const response = await getProducts(active);
-      console.log(response.content);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const recharge = async () => {
-    try {
-      const userID = 4;
-      const amount = 10000;
-      const response = await rechargeWalletByUserID(userID, amount);
-
-      const canOpen = await Linking.canOpenURL(response);
-      if (canOpen) {
-        await Linking.openURL(response);
-      } else {
-        console.log("Cannot open");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const check = async () => {
+  //   try {
+  //     const active = true;
+  //     const response = await getProducts(active);
+  //     console.log(response.content);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const handleFilterSelect = (selectedFilter) => {
     setSelectedFilter(selectedFilter);
@@ -75,7 +55,8 @@ const Home = () => {
 
   useEffect(() => {
     handleShowBalance();
-  }, []);
+  }, [balance]);
+
   const getAuction = async () => {
     setIsLoading(true);
     try {
@@ -90,6 +71,7 @@ const Home = () => {
         params = { status: selectedFilter, search: search };
       }
       const response = await getAuctions(params);
+      console.log("data", response.payload.content);
       setAuctionData(response.payload.content);
       setIsLoading(false);
     } catch (error) {
@@ -104,14 +86,10 @@ const Home = () => {
   return (
     <SafeAreaView className="bg-white">
       <ScrollView
-        className={`${auctionData.length === 0 && "h-[100vh]"} ${
+        className={`h-[85vh] ${auctionData.length === 0 && "h-[100vh]"} ${
           isLoading && "h-[100vh]"
         } `}
       >
-        {/* <TouchableOpacity onPress={() => recharge()}>
-          <Text>Check</Text>
-        </TouchableOpacity> */}
-
         <View className="m-2">
           <SearchInput onSearch={handleSearchParams} />
 
@@ -124,7 +102,7 @@ const Home = () => {
           {/* card fetch api base on filter */}
           {isLoading ? (
             <View className="h-[50vh] items-center justify-center">
-              <ActivityIndicator size="large" color="#FFAD41" />
+              <ActivityIndicator size="large" color="#FF9C01" />
             </View>
           ) : auctionData.length > 0 ? (
             auctionData.map((item, index) => (
